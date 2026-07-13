@@ -1,40 +1,54 @@
 const { Pool } = require("pg");
+const { parse } = require("pg-connection-string");
 
-const requiredEnv = [
-  "DB_HOST",
-  "DB_PORT",
-  "DB_USER",
-  "DB_PASSWORD",
-  "DB_NAME"
-];
+let poolConfig;
 
-const missingEnv = requiredEnv.filter(
-  (name) => !process.env[name]
-);
+if (process.env.DATABASE_URL) {
+  poolConfig = {
+    ...parse(process.env.DATABASE_URL),
+    connectionTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT_MS || 5000),
+    idleTimeoutMillis: Number(process.env.DB_IDLE_TIMEOUT_MS || 30000),
+    ssl: { rejectUnauthorized: false }
+  };
+} else {
+  const requiredEnv = [
+    "DB_HOST",
+    "DB_PORT",
+    "DB_USER",
+    "DB_PASSWORD",
+    "DB_NAME"
+  ];
 
-if (missingEnv.length > 0) {
-  throw new Error(
-    `Missing required database env vars: ${missingEnv.join(", ")}`
+  const missingEnv = requiredEnv.filter(
+    (name) => !process.env[name]
   );
+
+  if (missingEnv.length > 0) {
+    throw new Error(
+      `Missing required database env vars: ${missingEnv.join(", ")}`
+    );
+  }
+
+  poolConfig = {
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    connectionTimeoutMillis: Number(
+      process.env.DB_CONNECTION_TIMEOUT_MS || 5000
+    ),
+    idleTimeoutMillis: Number(
+      process.env.DB_IDLE_TIMEOUT_MS || 30000
+    ),
+    ssl:
+      process.env.DB_SSL === "true"
+        ? { rejectUnauthorized: false }
+        : undefined
+  };
 }
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  connectionTimeoutMillis: Number(
-    process.env.DB_CONNECTION_TIMEOUT_MS || 5000
-  ),
-  idleTimeoutMillis: Number(
-    process.env.DB_IDLE_TIMEOUT_MS || 30000
-  ),
-  ssl:
-    process.env.DB_SSL === "true"
-      ? { rejectUnauthorized: false }
-      : undefined
-});
+const pool = new Pool(poolConfig);
 
 pool.connect()
   .then((client) => {
