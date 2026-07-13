@@ -10,8 +10,10 @@ const corsOrigins = (process.env.CORS_ORIGIN || "")
   .map((value) => value.trim())
   .filter(Boolean);
 
+const allowAllOrigins = corsOrigins.includes("*");
+
 if (process.env.NODE_ENV === "production" && corsOrigins.length === 0) {
-  throw new Error("CORS_ORIGIN is required in production");
+  console.warn("CORS_ORIGIN is not set in production; defaulting to allow all origins for deploy/testing.");
 }
 
 app.use(express.json());
@@ -19,6 +21,7 @@ app.use(cors({
   origin: (origin, callback) => {
     if (
       !origin ||
+      allowAllOrigins ||
       corsOrigins.length === 0 ||
       corsOrigins.includes(origin)
     ) {
