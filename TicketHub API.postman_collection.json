@@ -1,0 +1,229 @@
+{
+  "info": {
+    "_postman_id": "tickethub-api-v2",
+    "name": "TicketHub API v2",
+    "description": "TicketHub Backend API - Event Ticketing System with QR Validation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Firebase Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firebaseToken\": \"<firebase_id_token>\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/firebase-login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "auth",
+                "firebase-login"
+              ]
+            },
+            "description": "Authenticate user with Firebase token and get JWT token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get All Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/events",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "events"
+              ]
+            },
+            "description": "Fetch all events sorted by date"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Tech Conference 2024\",\n  \"description\": \"Annual technology conference with industry leaders\",\n  \"location\": \"Convention Center, Downtown\",\n  \"date\": \"2024-12-15\",\n  \"time\": \"09:00\",\n  \"ticket_price\": 99.99,\n  \"capacity\": 500,\n  \"image_url\": \"https://example.com/event-banner.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/events",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "events"
+              ]
+            },
+            "description": "Create a new event"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Purchase Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"<event_id>\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tickets/purchase",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "tickets",
+                "purchase"
+              ]
+            },
+            "description": "Purchase a ticket for an event (requires authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ticket by Number",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tickets/TICKET-1733955324345-612345",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "tickets",
+                "TICKET-1733955324345-612345"
+              ]
+            },
+            "description": "Retrieve ticket details by ticket number (requires authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Validate Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{organizer_jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ticketNumber\": \"TICKET-1733955324345-612345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tickets/validate",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5000",
+              "path": [
+                "api",
+                "tickets",
+                "validate"
+              ]
+            },
+            "description": "Validate and mark a ticket as used (requires ORGANIZER role)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string",
+      "description": "Customer JWT token from Firebase login"
+    },
+    {
+      "key": "organizer_jwt_token",
+      "value": "",
+      "type": "string",
+      "description": "Organizer JWT token (user with ORGANIZER role)"
+    },
+    {
+      "key": "firebase_token",
+      "value": "",
+      "type": "string",
+      "description": "Firebase ID token"
+    }
+  ]
+}

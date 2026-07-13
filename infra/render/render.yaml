@@ -1,0 +1,22 @@
+# Render service template. Replace <your-repo> and <your-branch> before using.
+# This is a recommended starting template — edit values in the Render dashboard when creating the service.
+
+services:
+  - type: web
+    name: tickethub-backend
+    env: docker
+    repo: https://github.com/<your-username>/<your-repo>
+    branch: main
+    dockerfilePath: Dockerfile
+    plan: starter
+    buildCommand: npm ci
+    startCommand: node server.js
+
+databases:
+  - name: tickethub-db
+    engine: postgres
+    plan: starter
+    disk: 10
+
+# Note: For secrets you will still need to add them in the Render dashboard.
+# Use the dashboard to create a secret called FIREBASE_SERVICE_ACCOUNT_JSON and set it as an ENV var for the service.

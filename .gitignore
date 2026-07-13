@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+uploads/
+
+src/config/firebase_service_account.json
+src/config/serviceAccountKey.json
+*.log
+npm-debug.log*
